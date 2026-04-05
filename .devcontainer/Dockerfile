@@ -76,6 +76,7 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
   -a "source /usr/share/doc/fzf/examples/key-bindings.zsh" \
   -a "source /usr/share/doc/fzf/examples/completion.zsh" \
   -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
+  -a 'alias es-claude="claude --plugin-dir git/ai-knowledgebase --dangerously-skip-permissions"' \
   -x
 
 # Install Claude
