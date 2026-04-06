@@ -79,6 +79,17 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
   -a 'alias es-claude="claude --plugin-dir git/ai-knowledgebase --dangerously-skip-permissions"' \
   -x
 
+# Install .NET 10 SDK (user-local)
+RUN wget -q https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh && \
+  chmod +x /tmp/dotnet-install.sh && \
+  /tmp/dotnet-install.sh --channel 10.0 --install-dir $HOME/.dotnet && \
+  rm /tmp/dotnet-install.sh
+
+ENV DOTNET_ROOT=/home/${USERNAME}/.dotnet
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+ENV DOTNET_NOLOGO=true
+ENV PATH=$PATH:/home/${USERNAME}/.dotnet:/home/${USERNAME}/.dotnet/tools
+
 # Install Claude
 RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
