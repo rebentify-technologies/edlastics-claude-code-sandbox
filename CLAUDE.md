@@ -31,6 +31,22 @@ plugin-name/
 
 Plugin commands, agents, and skills are defined as **markdown files with YAML frontmatter** — they are prompt-based, not code. Hook handlers can be shell scripts or Python.
 
+## Workflow
+
+### Subagents
+- Use subagents liberally — one focused task each. Offload research, exploration, and parallel analysis.
+- Default: `model: "opus"`, `isolation: "worktree"` for any agent that writes code.
+
+### Git Worktrees
+- **All changes in git worktrees** — never commit on a repo's checked-out branch. Applies to `/workspace` and `/workspace/git/*`.
+
+### Quality
+- For non-trivial changes, pause and ask: *"Is there a more elegant way?"* Skip for simple fixes.
+- Hold yourself to a staff engineer standard before marking work complete.
+
+### Learnings
+- After any correction, update the relevant doc in `/workspace/git/ai-knowledgebase/`. No local memory files — keep knowledge centralized.
+
 ## Dev Container
 
 The devcontainer uses a strict network firewall (`init-firewall.sh`) that only allows connections to: GitHub, npm registry, Anthropic API, Sentry, Statsig, VS Code marketplace, Atlassian API, and Slack webhooks. All other outbound traffic is rejected.
