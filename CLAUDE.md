@@ -40,10 +40,26 @@ Plugin commands, agents, and skills are defined as **markdown files with YAML fr
 ### Subagents
 - Use subagents liberally — one focused task each. Offload research, exploration, and parallel analysis.
 - For complex problems, throw more compute at it via parallel subagents.
-- Default: `model: "opus"`, `isolation: "worktree"` for any agent that writes code.
+- Default: `model: "opus"` for any agent that writes code. Do **not** use `isolation: "worktree"` — use npm workspace worktrees instead (see below).
 
-### Git Worktrees
+### Git Worktrees (npm workspaces pattern)
 - **All changes in git worktrees** — never commit on a repo's checked-out branch. Applies to `/workspace` and `/workspace/git/*`.
+- Use **npm workspaces** so all worktrees share a single `node_modules` — no per-worktree `npm install`.
+- Repo structure:
+  ```
+  repo/
+    node_modules/        # shared by all worktrees
+    worktrees/
+      wt-main/           # git worktree for main branch
+      wt-feature-xyz/    # git worktree for feature branch
+    package.json         # "workspaces": ["worktrees/*"]
+    .gitignore           # includes: worktrees/wt-*
+  ```
+- **Creating a worktree:** `git worktree add worktrees/wt-<name> <branch>` — prefix with `wt-` so the directory name doesn't collide with the branch name.
+- **Root `package.json`:** Only contains `"workspaces": ["worktrees/*"]`. Run `npm install` once from the root to resolve all dependencies.
+- **Adding a dependency for a worktree:** `npm install <package> -w worktrees/wt-<name>` from the root.
+- **`.gitignore`:** Add `worktrees/wt-*` to prevent worktree directories from being tracked.
+- Agents should `cd` into their worktree directory (e.g., `worktrees/wt-feature-xyz/`) and work normally — `node_modules` resolves from the root.
 
 ### Verification
 - **Never mark a task complete without proving it works.** Run builds, tests, check logs, and demonstrate correctness.
