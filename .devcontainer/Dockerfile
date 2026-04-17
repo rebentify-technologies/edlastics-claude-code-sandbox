@@ -77,6 +77,8 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
   -a "source /usr/share/doc/fzf/examples/completion.zsh" \
   -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
   -a 'alias es-claude="claude --plugin-dir git/ai-knowledgebase --dangerously-skip-permissions"' \
+  -a '[ -f /workspace/.devcontainer/gcp-auth.sh ] && source /workspace/.devcontainer/gcp-auth.sh' \
+  -a 'alias gcp-refresh-token="source /workspace/.devcontainer/gcp-auth.sh"' \
   -x
 
 # Install .NET 10 SDK (user-local)
