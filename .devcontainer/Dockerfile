@@ -77,6 +77,7 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
   -a "source /usr/share/doc/fzf/examples/completion.zsh" \
   -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
   -a 'alias es-claude="claude --plugin-dir git/ai-knowledgebase --dangerously-skip-permissions"' \
+  -a '[ -n "$GCP_SERVICE_ACCOUNT_KEY_BASE64" ] && { [ -f ~/.gcp-key.json ] || { echo "$GCP_SERVICE_ACCOUNT_KEY_BASE64" | base64 -d > ~/.gcp-key.json && chmod 600 ~/.gcp-key.json; }; export GOOGLE_APPLICATION_CREDENTIALS=~/.gcp-key.json; }' \
   -x
 
 # Install .NET 10 SDK (user-local)
@@ -93,6 +94,9 @@ ENV PATH=$PATH:/home/${USERNAME}/.dotnet:/home/${USERNAME}/.dotnet/tools
 # Install Claude
 RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
+# Install google-artifactregistry-auth globally — repos invoke it via a
+# preinstall hook to fetch a fresh token and write it into ~/.npmrc.
+RUN npm install -g google-artifactregistry-auth
 
 # Copy and set up firewall script
 COPY init-firewall.sh /usr/local/bin/

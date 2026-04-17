@@ -75,7 +75,9 @@ for domain in \
     "vscode.blob.core.windows.net" \
     "update.code.visualstudio.com" \
     "api.atlassian.com" \
-    "hooks.slack.com"; do
+    "hooks.slack.com" \
+    "us-central1-npm.pkg.dev" \
+    "oauth2.googleapis.com"; do
     echo "Resolving $domain..."
     ips=$(dig +noall +answer A "$domain" | awk '$4 == "A" {print $5}')
     if [ -z "$ips" ]; then
