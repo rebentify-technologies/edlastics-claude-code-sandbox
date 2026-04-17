@@ -95,6 +95,10 @@ ENV PATH=$PATH:/home/${USERNAME}/.dotnet:/home/${USERNAME}/.dotnet/tools
 # Install Claude
 RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
+# Install google-auth-library globally (used by .devcontainer/gcp-auth.sh
+# to exchange service account keys for OAuth2 access tokens)
+RUN npm install -g google-auth-library
+
 
 # Copy and set up firewall script
 COPY init-firewall.sh /usr/local/bin/
