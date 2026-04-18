@@ -43,20 +43,23 @@ Plugin commands, agents, and skills are defined as **markdown files with YAML fr
 - Default: `model: "opus"` for any agent that writes code. Do **not** use `isolation: "worktree"` — use the split layout below.
 
 ### Workspace layout
-- **All changes in git worktrees** — never commit on a repo's checked-out branch. Applies to `/workspace` and `/workspace/git/*`.
+- **All changes in git worktrees** — never commit on a repo's checked-out branch. Applies to `/workspace` and `/workspace/agent-dev/*`.
 - Every repo lives in two places:
   ```
   /workspace/
-    git/<repo>/                    # canonical clone (agents work here in worktrees/wt-*)
+    agent-dev/
+      <repo>/                    # canonical clone (agents work here)
       worktrees/
-        wt-<feature>/              # ephemeral worktree for a feature/story
-    local-dev/<repo>/              # the developer's IDE checkout (Cursor) on branch `local-dev`
+        <repo>/
+          wt-<feature>/          # ephemeral worktree for a feature/story
+    local-dev/
+      <repo>/                    # the developer's IDE checkout (Cursor) on branch `local-dev`
   ```
-- **`/workspace/local-dev/` is off-limits to agents.** Agents never `cd` into it, build in it, run tests in it, or remove it. `/clean-workspace` preserves it under all circumstances. The developer works there; agents work in `/workspace/git/<repo>/worktrees/wt-*/`.
-- **Creating an ephemeral/agent worktree:** `git worktree add worktrees/wt-<name> <branch>` from the canonical clone. The `wt-` prefix marks it ephemeral so cleanup automation can target it positively.
-- **Node package manager:** repos migrating to pnpm declare `"packageManager": "pnpm@<version>"` in `package.json` — Corepack downloads the matching version on first use. Repos not yet migrated still use npm. See [RS-2122](https://rebentify.atlassian.net/browse/RS-2122).
+- **`/workspace/local-dev/` is off-limits to agents.** Agents never `cd` into it, build in it, run tests in it, or remove it. `/clean-workspace` preserves it under all circumstances. The developer works there; agents work in `/workspace/agent-dev/worktrees/<repo>/wt-*/`.
+- **Creating an ephemeral/agent worktree:** from the canonical clone, `git worktree add /workspace/agent-dev/worktrees/<repo>/wt-<name> <branch>`. The `wt-` prefix marks it ephemeral so cleanup automation can target it positively.
+- **Node package manager:** repos declare `"packageManager": "pnpm@<version>"` in `package.json` — Corepack downloads the matching version on first use. See [RS-2122](https://rebentify.atlassian.net/browse/RS-2122).
 - **Per-worktree installs:** each worktree gets its own `node_modules`. With pnpm's content-addressable store, the extra disk + time cost is near zero after the first install.
-- See `git/ai-knowledgebase/conventions/worktree-setup.md` for the full convention (Cursor setup, troubleshooting, GCP Artifact Registry auth).
+- See `agent-dev/ai-knowledgebase/conventions/worktree-setup.md` for the full convention (Cursor setup, troubleshooting, GCP Artifact Registry auth).
 
 ### Verification
 - **Never mark a task complete without proving it works.** Run builds, tests, check logs, and demonstrate correctness.
@@ -70,8 +73,8 @@ Plugin commands, agents, and skills are defined as **markdown files with YAML fr
 - Find root causes. No temporary fixes. Minimal code impact — only touch what's necessary.
 
 ### Learnings
-- After any correction, update the relevant doc in `/workspace/git/ai-knowledgebase/`. No local memory files — keep knowledge centralized.
-- Review the relevant knowledgebase docs (`/workspace/git/ai-knowledgebase/repos/`, `/workspace/git/ai-knowledgebase/conventions/`) at the start of work in any repo.
+- After any correction, update the relevant doc in `/workspace/agent-dev/ai-knowledgebase/`. No local memory files — keep knowledge centralized.
+- Review the relevant knowledgebase docs (`/workspace/agent-dev/ai-knowledgebase/repos/`, `/workspace/agent-dev/ai-knowledgebase/conventions/`) at the start of work in any repo.
 
 ## Dev Container
 
