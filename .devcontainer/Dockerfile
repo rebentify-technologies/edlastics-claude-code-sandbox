@@ -98,6 +98,11 @@ RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 # preinstall hook to fetch a fresh token and write it into ~/.npmrc.
 RUN npm install -g google-artifactregistry-auth
 
+# Enable Corepack so pnpm is available out of the box. Repos pin their
+# pnpm version via `"packageManager": "pnpm@<version>"` in package.json
+# and Corepack downloads/uses that exact version on first invocation.
+RUN corepack enable --install-directory /usr/local/share/npm-global/bin
+
 # Copy and set up firewall script
 COPY init-firewall.sh /usr/local/bin/
 USER root
