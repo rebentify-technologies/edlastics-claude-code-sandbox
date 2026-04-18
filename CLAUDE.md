@@ -59,7 +59,7 @@ Plugin commands, agents, and skills are defined as **markdown files with YAML fr
 - **`/clean-workspace` preserves `/workspace/dev-local/`** — it contains uncommitted WIP. Cleanup is the only thing off-limits there; ordinary edits (manual or Claude-driven) are fine.
 - **Creating an ephemeral/agent worktree:** from the canonical clone, `git worktree add /workspace/dev-agent/worktrees/<repo>/wt-<name> <branch>`. The `wt-` prefix marks it ephemeral so cleanup automation can target it positively.
 - **Per-worktree installs:** each worktree gets its own `node_modules`. For repos migrated to pnpm, the content-addressable store makes the extra disk + time cost near zero.
-- See `dev-agent/ai-knowledgebase/conventions/worktree-setup.md` for the full convention (Cursor setup, troubleshooting, GCP Artifact Registry auth).
+- See `dev-local/ai-knowledgebase/conventions/worktree-setup.md` for the full convention (Cursor setup, troubleshooting, GCP Artifact Registry auth).
 
 ### Verification
 - **Never mark a task complete without proving it works.** Run builds, tests, check logs, and demonstrate correctness.
@@ -73,8 +73,8 @@ Plugin commands, agents, and skills are defined as **markdown files with YAML fr
 - Find root causes. No temporary fixes. Minimal code impact — only touch what's necessary.
 
 ### Learnings
-- After any correction, update the relevant doc in `/workspace/dev-agent/ai-knowledgebase/`. No local memory files — keep knowledge centralized.
-- Review the relevant knowledgebase docs (`/workspace/dev-agent/ai-knowledgebase/repos/`, `/workspace/dev-agent/ai-knowledgebase/conventions/`) at the start of work in any repo.
+- After any correction, update the relevant doc in `/workspace/dev-local/ai-knowledgebase/`. No local memory files — keep knowledge centralized.
+- Review the relevant knowledgebase docs (`/workspace/dev-local/ai-knowledgebase/repos/`, `/workspace/dev-local/ai-knowledgebase/conventions/`) at the start of work in any repo.
 
 ## Dev Container
 
