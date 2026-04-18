@@ -50,12 +50,14 @@ Plugin commands, agents, and skills are defined as **markdown files with YAML fr
   repo/
     node_modules/        # shared by all worktrees
     worktrees/
+      wt-local-dev/      # persistent human-driven local-dev worktree (preserved by /clean-workspace)
       wt-main/           # git worktree for main branch
       wt-feature-xyz/    # git worktree for feature branch
     package.json         # "workspaces": ["worktrees/*"]
     .gitignore           # includes: worktrees/wt-*
   ```
 - **Creating a worktree:** `git worktree add worktrees/wt-<name> <branch>` — prefix with `wt-` so the directory name doesn't collide with the branch name.
+- **`wt-local-dev` is off-limits to agents.** Every repo has a persistent `worktrees/wt-local-dev` worktree that belongs to the developer's IDE (Cursor). Agents never `cd` into it, build in it, run tests in it, or remove it. `/clean-workspace` preserves it under all circumstances. See `git/ai-knowledgebase/conventions/worktree-setup.md`.
 - **Root `package.json`:** Only contains `"workspaces": ["worktrees/*"]`. Run `npm install` once from the root to resolve all dependencies.
 - **Adding a dependency for a worktree:** `npm install <package> -w worktrees/wt-<name>` from the root.
 - **`.gitignore`:** Add `worktrees/wt-*` to prevent worktree directories from being tracked.
