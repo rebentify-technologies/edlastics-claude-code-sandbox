@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:22
 
 ARG TZ
 ENV TZ="$TZ"
@@ -91,12 +91,13 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 ENV DOTNET_NOLOGO=true
 ENV PATH=$PATH:/home/${USERNAME}/.dotnet:/home/${USERNAME}/.dotnet/tools
 
-# Install Claude
-RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
-
-# Install google-artifactregistry-auth globally — repos invoke it via a
-# preinstall hook to fetch a fresh token and write it into ~/.npmrc.
-RUN npm install -g google-artifactregistry-auth
+# Install Claude, google-artifactregistry-auth (preinstall hook uses it to
+# fetch an Artifact Registry token into ~/.npmrc), and enable Corepack so
+# pnpm is available out of the box. Repos pin their pnpm version via
+# `"packageManager": "pnpm@<version>"`; Corepack downloads that exact
+# version on first invocation.
+RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION} google-artifactregistry-auth \
+  && corepack enable --install-directory /usr/local/share/npm-global/bin
 
 # Copy and set up firewall script
 COPY init-firewall.sh /usr/local/bin/
