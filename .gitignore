@@ -1,3 +1,12 @@
 .DS_Store
 .env
-/git/
+
+# Team canonical clones and developer IDE checkouts — populated by /clone-repos
+/dev-agent/
+/dev-local/
+
+# Sandbox repo's own ephemeral worktrees for PR work
+/worktrees/wt-*
+
+# pnpm content-addressable store (shared across all repos in the container)
+/.pnpm-store/
