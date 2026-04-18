@@ -48,14 +48,15 @@ Plugin commands, agents, and skills are defined as **markdown files with YAML fr
   ```
   /workspace/
     dev-agent/
-      <repo>/                    # canonical clone (agents work here)
+      <repo>/                    # canonical clone
       worktrees/
         <repo>/
-          wt-<feature>/          # ephemeral worktree for a feature/story
+          wt-<feature>/          # ephemeral worktree for autonomous agent / feature work
     dev-local/
-      <repo>/                    # the developer's IDE checkout (Cursor) on branch `local-dev`
+      <repo>/                    # developer's IDE checkout (Cursor) on branch `local-dev`
   ```
-- **`/workspace/dev-local/` is off-limits to agents.** Agents never `cd` into it, build in it, run tests in it, or remove it. `/clean-workspace` preserves it under all circumstances. The developer works there; agents work in `/workspace/dev-agent/worktrees/<repo>/wt-*/`.
+- **`dev-local/` vs `dev-agent/` is about the driver, not ownership.** Manual editing and interactive Claude sessions happen in `dev-local/`. Autonomous / long-running agent tasks run in `dev-agent/worktrees/<repo>/wt-*/` so they can't clobber what the developer is actively editing.
+- **`/clean-workspace` preserves `/workspace/dev-local/`** — it contains uncommitted WIP. Cleanup is the only thing off-limits there; ordinary edits (manual or Claude-driven) are fine.
 - **Creating an ephemeral/agent worktree:** from the canonical clone, `git worktree add /workspace/dev-agent/worktrees/<repo>/wt-<name> <branch>`. The `wt-` prefix marks it ephemeral so cleanup automation can target it positively.
 - **Per-worktree installs:** each worktree gets its own `node_modules`. For repos migrated to pnpm, the content-addressable store makes the extra disk + time cost near zero.
 - See `dev-agent/ai-knowledgebase/conventions/worktree-setup.md` for the full convention (Cursor setup, troubleshooting, GCP Artifact Registry auth).
