@@ -43,22 +43,22 @@ Plugin commands, agents, and skills are defined as **markdown files with YAML fr
 - Default: `model: "opus"` for any agent that writes code. Do **not** use `isolation: "worktree"` — use the split layout below.
 
 ### Workspace layout
-- **All changes in git worktrees** — never commit on a repo's checked-out branch. Applies to `/workspace` and `/workspace/dev-agent/*`.
-- Every repo lives in two places:
+- **All changes in git worktrees or feature branches** — never commit on a repo's default branch. Applies to `/workspace` and every repo clone.
+- Every repo is cloned into two independent locations:
   ```
   /workspace/
     dev-agent/
-      <repo>/                    # canonical clone
+      <repo>/                    # canonical clone (on `main`, used by agents)
       worktrees/
         <repo>/
           wt-<feature>/          # ephemeral worktree for autonomous agent / feature work
     dev-local/
-      <repo>/                    # developer's IDE checkout (Cursor) on branch `local-dev`
+      <repo>/                    # standalone clone on branch `local-dev` (developer's IDE checkout)
   ```
 - **`dev-local/` vs `dev-agent/` is about the driver, not ownership.** Manual editing and interactive Claude sessions happen in `dev-local/`. Autonomous / long-running agent tasks run in `dev-agent/worktrees/<repo>/wt-*/` so they can't clobber what the developer is actively editing.
 - **`/clean-workspace` preserves `/workspace/dev-local/`** — it contains uncommitted WIP. Cleanup is the only thing off-limits there; ordinary edits (manual or Claude-driven) are fine.
 - **Creating an ephemeral/agent worktree:** from the canonical clone, `git worktree add /workspace/dev-agent/worktrees/<repo>/wt-<name> <branch>`. The `wt-` prefix marks it ephemeral so cleanup automation can target it positively.
-- **Per-worktree installs:** each worktree gets its own `node_modules`. For repos migrated to pnpm, the content-addressable store makes the extra disk + time cost near zero.
+- **Per-clone installs:** each clone and each agent worktree gets its own `node_modules`. For repos migrated to pnpm, the content-addressable store makes the extra disk + time cost near zero.
 - See `dev-local/ai-knowledgebase/conventions/worktree-setup.md` for the full convention (Cursor setup, troubleshooting, GCP Artifact Registry auth).
 
 ### Verification
