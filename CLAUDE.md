@@ -40,26 +40,26 @@ Plugin commands, agents, and skills are defined as **markdown files with YAML fr
 ### Subagents
 - Use subagents liberally — one focused task each. Offload research, exploration, and parallel analysis.
 - For complex problems, throw more compute at it via parallel subagents.
-- Default: `model: "opus"` for any agent that writes code. Do **not** use `isolation: "worktree"` — use npm workspace worktrees instead (see below).
+- Default: `model: "opus"` for any agent that writes code. Do **not** use `isolation: "worktree"` — use the split layout below.
 
-### Git Worktrees (npm workspaces pattern)
-- **All changes in git worktrees** — never commit on a repo's checked-out branch. Applies to `/workspace` and `/workspace/git/*`.
-- Use **npm workspaces** so all worktrees share a single `node_modules` — no per-worktree `npm install`.
-- Repo structure:
+### Workspace layout
+- **All changes in git worktrees** — never commit on a repo's checked-out branch. Applies to `/workspace` and `/workspace/dev-agent/*`.
+- Every repo lives in two places:
   ```
-  repo/
-    node_modules/        # shared by all worktrees
-    worktrees/
-      wt-main/           # git worktree for main branch
-      wt-feature-xyz/    # git worktree for feature branch
-    package.json         # "workspaces": ["worktrees/*"]
-    .gitignore           # includes: worktrees/wt-*
+  /workspace/
+    dev-agent/
+      <repo>/                    # canonical clone
+      worktrees/
+        <repo>/
+          wt-<feature>/          # ephemeral worktree for autonomous agent / feature work
+    dev-local/
+      <repo>/                    # developer's IDE checkout (Cursor) on branch `local-dev`
   ```
-- **Creating a worktree:** `git worktree add worktrees/wt-<name> <branch>` — prefix with `wt-` so the directory name doesn't collide with the branch name.
-- **Root `package.json`:** Only contains `"workspaces": ["worktrees/*"]`. Run `npm install` once from the root to resolve all dependencies.
-- **Adding a dependency for a worktree:** `npm install <package> -w worktrees/wt-<name>` from the root.
-- **`.gitignore`:** Add `worktrees/wt-*` to prevent worktree directories from being tracked.
-- Agents should `cd` into their worktree directory (e.g., `worktrees/wt-feature-xyz/`) and work normally — `node_modules` resolves from the root.
+- **`dev-local/` vs `dev-agent/` is about the driver, not ownership.** Manual editing and interactive Claude sessions happen in `dev-local/`. Autonomous / long-running agent tasks run in `dev-agent/worktrees/<repo>/wt-*/` so they can't clobber what the developer is actively editing.
+- **`/clean-workspace` preserves `/workspace/dev-local/`** — it contains uncommitted WIP. Cleanup is the only thing off-limits there; ordinary edits (manual or Claude-driven) are fine.
+- **Creating an ephemeral/agent worktree:** from the canonical clone, `git worktree add /workspace/dev-agent/worktrees/<repo>/wt-<name> <branch>`. The `wt-` prefix marks it ephemeral so cleanup automation can target it positively.
+- **Per-worktree installs:** each worktree gets its own `node_modules`. For repos migrated to pnpm, the content-addressable store makes the extra disk + time cost near zero.
+- See `dev-local/ai-knowledgebase/conventions/worktree-setup.md` for the full convention (Cursor setup, troubleshooting, GCP Artifact Registry auth).
 
 ### Verification
 - **Never mark a task complete without proving it works.** Run builds, tests, check logs, and demonstrate correctness.
@@ -73,8 +73,8 @@ Plugin commands, agents, and skills are defined as **markdown files with YAML fr
 - Find root causes. No temporary fixes. Minimal code impact — only touch what's necessary.
 
 ### Learnings
-- After any correction, update the relevant doc in `/workspace/git/ai-knowledgebase/`. No local memory files — keep knowledge centralized.
-- Review the relevant knowledgebase docs (`/workspace/git/ai-knowledgebase/repos/`, `/workspace/git/ai-knowledgebase/conventions/`) at the start of work in any repo.
+- After any correction, update the relevant doc in `/workspace/dev-local/ai-knowledgebase/`. No local memory files — keep knowledge centralized.
+- Review the relevant knowledgebase docs (`/workspace/dev-local/ai-knowledgebase/repos/`, `/workspace/dev-local/ai-knowledgebase/conventions/`) at the start of work in any repo.
 
 ## Dev Container
 
