@@ -77,8 +77,19 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
   -a "source /usr/share/doc/fzf/examples/completion.zsh" \
   -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
   -a 'alias es-claude="claude --plugin-dir /workspace/dev-local/ai-knowledgebase --dangerously-skip-permissions"' \
+  -a 'alias gcloud-login="pnpm dlx google-artifactregistry-auth"' \
   -a '[ -n "$GCP_SERVICE_ACCOUNT_KEY_BASE64" ] && { [ -f ~/.gcp-key.json ] || { echo "$GCP_SERVICE_ACCOUNT_KEY_BASE64" | base64 -d > ~/.gcp-key.json && chmod 600 ~/.gcp-key.json; }; export GOOGLE_APPLICATION_CREDENTIALS=~/.gcp-key.json; }' \
+  -a '[ -n "$GOOGLE_APPLICATION_CREDENTIALS" ] && pnpm dlx google-artifactregistry-auth >/dev/null 2>&1' \
   -x
+
+# Trust every repo under /workspace regardless of filesystem ownership quirks
+# (devcontainer bind-mounts from Windows/WSL can trip git's "dubious ownership"
+# check even though the files are functionally ours). Also wire gh up as the
+# credential helper so `git` over HTTPS transparently uses $GH_TOKEN — without
+# this, `git fetch`/`git push` prompt for a username even when `gh auth status`
+# reports logged in.
+RUN git config --global --add safe.directory '*' \
+  && gh auth setup-git
 
 # Install .NET 10 SDK (user-local)
 RUN wget -q https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh && \
