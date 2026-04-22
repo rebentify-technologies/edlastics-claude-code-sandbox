@@ -79,7 +79,7 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
   -a 'alias es-claude="claude --plugin-dir /workspace/dev-local/ai-knowledgebase --dangerously-skip-permissions"' \
   -a 'alias gcloud-login="pnpm dlx google-artifactregistry-auth"' \
   -a '[ -n "$GCP_SERVICE_ACCOUNT_KEY_BASE64" ] && { [ -f ~/.gcp-key.json ] || { echo "$GCP_SERVICE_ACCOUNT_KEY_BASE64" | base64 -d > ~/.gcp-key.json && chmod 600 ~/.gcp-key.json; }; export GOOGLE_APPLICATION_CREDENTIALS=~/.gcp-key.json; }' \
-  -a '[ -n "$GOOGLE_APPLICATION_CREDENTIALS" ] && pnpm dlx google-artifactregistry-auth >/dev/null 2>&1' \
+  -a '[ -n "$GOOGLE_APPLICATION_CREDENTIALS" ] && pnpm dlx google-artifactregistry-auth >/dev/null 2>&1 &!' \
   -x
 
 # Trust every repo under /workspace regardless of filesystem ownership quirks
