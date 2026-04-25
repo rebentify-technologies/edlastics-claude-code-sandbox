@@ -89,7 +89,8 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 # this, `git fetch`/`git push` prompt for a username even when `gh auth status`
 # reports logged in.
 RUN git config --global --add safe.directory '*' \
-  && gh auth setup-git
+  && git config --global credential.https://github.com.helper '!gh auth git-credential' \
+  && git config --global credential.https://gist.github.com.helper '!gh auth git-credential'
 
 # Install .NET 10 SDK (user-local)
 RUN wget -q https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh && \
