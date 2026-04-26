@@ -53,7 +53,7 @@ Plugin commands, agents, and skills are defined as **markdown files with YAML fr
         <repo>/
           wt-<feature>/          # ephemeral worktree for autonomous agent / feature work
     dev-local/
-      <repo>/                    # standalone clone on branch `local-dev` (developer's IDE checkout)
+      <repo>/                    canonical clone (on `main`, used by devs) (developer's IDE checkout)
   ```
 - **`dev-local/` vs `dev-agent/` is about the driver, not ownership.** Manual editing and interactive Claude sessions happen in `dev-local/`. Autonomous / long-running agent tasks run in `dev-agent/worktrees/<repo>/wt-*/` so they can't clobber what the developer is actively editing.
 - **`/clean-workspace` preserves `/workspace/dev-local/`** — it contains uncommitted WIP. Cleanup is the only thing off-limits there; ordinary edits (manual or Claude-driven) are fine.
