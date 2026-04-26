@@ -1,6 +1,16 @@
 .DS_Store
 .env
 
+# Claude Code CLI + shell history from devcontainer bind mounts (sessions, credentials)
+/.claude-sandbox/
+
+# Claude Code runtime artifacts that surface in the workspace root
+/.claude/scheduled_tasks.lock
+/*.jsonl
+
+# Local IDE settings
+/.vscode/
+
 # Team canonical clones and developer IDE checkouts — populated by /clone-repos
 /dev-agent/
 /dev-local/
