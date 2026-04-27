@@ -88,6 +88,30 @@ while read -r cidr; do
     ipset add allowed-domains "$cidr"
 done < <(echo "$goog_ranges" | jq -r '.prefixes[].ipv4Prefix // empty' | aggregate -q)
 
+# Fetch AWS CloudFront IP ranges. npm.fontawesome.com → cloudsmith.io is fronted
+# by CloudFront, whose edge IPs rotate every few minutes. Resolving the hostname
+# once at boot drifts out of sync quickly and pnpm hits EHOSTUNREACH mid-install.
+echo "Fetching AWS CloudFront IP ranges..."
+aws_ranges=$(curl -s https://ip-ranges.amazonaws.com/ip-ranges.json)
+if [ -z "$aws_ranges" ]; then
+    echo "ERROR: Failed to fetch AWS IP ranges"
+    exit 1
+fi
+
+if ! echo "$aws_ranges" | jq -e '.prefixes' >/dev/null; then
+    echo "ERROR: AWS ranges response missing prefixes"
+    exit 1
+fi
+
+echo "Processing CloudFront IPs..."
+while read -r cidr; do
+    if [[ ! "$cidr" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}$ ]]; then
+        echo "ERROR: Invalid CIDR range from AWS ranges: $cidr"
+        exit 1
+    fi
+    ipset add allowed-domains "$cidr"
+done < <(echo "$aws_ranges" | jq -r '.prefixes[] | select(.service == "CLOUDFRONT") | .ip_prefix' | aggregate -q)
+
 # Resolve and add other allowed domains
 for domain in \
     "registry.npmjs.org" \
