@@ -12,26 +12,8 @@
   "runArgs": [
     "--cap-add=NET_ADMIN",
     "--cap-add=NET_RAW",
-    "-p",
-    "3000:3000",
-    "-p",
-    "3001:3001",
-    "-p",
-    "3002:3002",
     "--env-file=${localWorkspaceFolder}/.env"
   ],
-  "forwardPorts": [3000, 3001, 3002],
-  "portsAttributes": {
-    "3000": {
-      "label": "scheduling-ui (Vite)"
-    },
-    "3001": {
-      "label": "elastic-pass-ui (Vite)"
-    },
-    "3002": {
-      "label": "helm (Vite)"
-    }
-  },
   "initializeCommand": [
     "node",
     "-e",
